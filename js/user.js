@@ -7,7 +7,8 @@ window.addEventListener('load', async function() {
 		getMyAccounts(await web3.eth.getAccounts());
 
 		eleicao = new web3.eth.Contract(VotingContractInterface, CONTRACT_ADDRESS);
-		getCandidatos(eleicao, populaCandidatos);
+		getCandidatos(eleicao, populaCandidatosOptions);
+		await getChairperson(eleicao, setIsAdmin);
 		getVoterInfo(eleicao, web3.utils.toHex(myAddress), updateMyStatus);
 	}
 });
@@ -28,14 +29,25 @@ $("#btnVote").on('click',function(){
 
 function updateMyStatus(voterInfo) {
 	if (voterInfo.weight > 0) {
-		if (voterInfo.voted) {
-			document.getElementById('myStatus').innerHTML = '<h3 class="alert alert-success">Voce ja votou</h3>';
-		} else if(voterInfo.delegate !== ZERO_ADDRESS) {
+		if(voterInfo.delegate !== ZERO_ADDRESS) {
 			document.getElementById('myStatus').innerHTML = '<h3 class="alert alert-warning">Voce delegou o voto</h3>';
+		} else if (voterInfo.voted) {
+			document.getElementById('myStatus').innerHTML = '<h3 class="alert alert-success">Voce ja votou</h3>';
 		} else {
 			document.getElementById('myStatus').innerHTML = '<h3 class="alert alert-info">Voce ainda nao votou</h3>';
 		}
 	} else {
 		document.getElementById('myStatus').innerHTML = '<h3 class="alert alert-danger">Voce nao tem direito a voto</h3>';
 	}
+	if (voterInfo.name === '' && isAdmin) {
+		voterInfo.name = 'Admin';
+	}
+	document.getElementById('myName').innerHTML = '<strong>Seu nome:</strong> ' + voterInfo.name;
+}
+
+function delegarVoto() {
+	const delegateAddress = document.getElementById('delegateAddress').value;
+	delegate(eleicao, delegateAddress, function (result) {
+		window.location.reload();
+	});
 }

@@ -55,7 +55,7 @@ function getCandidatos(contractRef,callback)
 	});
 }
 
-function populaCandidatos(candidatos) {
+function populaCandidatosTable(candidatos) {
 	candidatos.forEach((candidato, index) => {
 		// Creates a row element.
 		const rowElem = document.createElement("tr");
@@ -73,7 +73,11 @@ function populaCandidatos(candidatos) {
 
 		// Adds the new row to the voting table.
 		tableElem.appendChild(rowElem);
+    });
+}
 
+function populaCandidatosOptions(candidatos) {
+	candidatos.forEach((candidato, index) => {
 		// Creates an option for each candidate
 		const candidateOption = document.createElement("option");
 		candidateOption.value = index;
@@ -106,6 +110,17 @@ function getVoterInfo(contractRef, address, callback) {
 	contractRef.methods.voters(address).call().then((data) => {
 		if (callback) {
 			callback(data);
+		}
+	});
+}
+
+function delegate(contractRef, toAddress, callback) {
+	contractRef.methods.delegate(toAddress).send({from: myAddress}, function(error, result) {
+		if (error) {
+			window.alert('Ocorreu um erro ao delegar');
+		}
+		if (callback) {
+			callback(result);
 		}
 	});
 }
