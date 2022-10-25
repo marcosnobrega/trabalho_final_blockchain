@@ -18,7 +18,7 @@ $("#btnVote").on('click',function(){
 
         eleicao.methods.vote(candidato).send({from: myAddress})
 	       .on('receipt',function(receipt) {
-			windows.location.reaload(true);
+			window.location.reload();
 		})
 		.on('error',function(error) {
 			console.log(error.message);
